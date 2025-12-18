@@ -6,7 +6,6 @@ pipeline {
         stage('Build') {
             steps {
                 dir('app') {
-                    sh 'ls -la'
                     sh 'chmod +x mvnw'
                     retry(3) {
                         sh './mvnw clean package -DskipTests'
@@ -25,9 +24,10 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                dir('app') {
-                    sh 'docker-compose -f docker-compose_ZhantemirB.yml up -d'
-                }
+                sh '''
+                ssh -o StrictHostKeyChecking=no devops@192.168.68.58 \
+                "cd /opt/devops-project/app && docker-compose -f docker-compose_ZhantemirB.yml up -d"
+                '''
             }
         }
     }
