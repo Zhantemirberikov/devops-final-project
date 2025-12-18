@@ -44,7 +44,7 @@ pipeline {
             steps {
                 dir('app') {
                     sh """
-                        docker build -t ${IMAGE}:${VERSION} .
+                        docker build -f Dockerfile_ZhantemirB -t ${IMAGE}:${VERSION} .
                     """
                 }
             }
