@@ -2,14 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main',
-                    url: 'git@github.com:Zhantemirberikov/devops-final-project.git'.
- credentialsId: 'github-zhantemir-ssh'
-
-            }
-        }
 
         stage('Build') {
             steps {
