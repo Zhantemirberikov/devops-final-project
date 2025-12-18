@@ -8,7 +8,9 @@ pipeline {
                 dir('app') {
                     sh 'ls -la'
                     sh 'chmod +x mvnw'
-                    sh './mvnw clean package -DskipTests'
+                    retry(3) {
+                        sh './mvnw clean package -DskipTests'
+                    }
                 }
             }
         }
