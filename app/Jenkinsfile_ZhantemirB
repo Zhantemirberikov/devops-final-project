@@ -26,7 +26,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 dir('app') {
-                    sh 'docker compose -f docker-compose_ZhantemirB.yml up -d'
+                    sh 'docker-compose -f docker-compose_ZhantemirB.yml up -d'
                 }
             }
         }
