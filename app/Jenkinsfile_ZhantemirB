@@ -1,36 +1,80 @@
 pipeline {
     agent any
 
+    environment {
+        APP_NAME = "todo-app"
+        IMAGE = "zhantemirb/todo-app"
+        VERSION = "${env.BUILD_NUMBER}"
+    }
+
     stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    credentialsId: 'git-cred',
+                    url: 'https://github.com/Zhantemirberikov/devops-final-project.git'
+            }
+        }
 
         stage('Build') {
             steps {
-                dir('app') {
-                    sh 'chmod +x mvnw'
-                    retry(3) {
-                        sh './mvnw clean package -DskipTests'
-                    }
-                }
+                sh './gradlew clean build'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh './gradlew test'
+            }
+        }
+
+        stage('Static Analysis') {
+            steps {
+                echo "Static code analysis (Checkstyle / SpotBugs placeholder)"
             }
         }
 
         stage('Docker Build') {
             steps {
-                dir('app') {
-                    sh 'docker build -f Dockerfile_ZhantemirB -t devopsapp:zhantemir .'
+                sh """
+                    docker build -t ${IMAGE}:${VERSION} .
+                """
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                withCredentials([usernamePassword(
+                        credentialsId: 'docker-cred',
+                        usernameVariable: 'USER',
+                        passwordVariable: 'PASS'
+                )]) {
+                    sh """
+                        echo $PASS | docker login -u $USER --password-stdin
+                        docker push ${IMAGE}:${VERSION}
+                    """
                 }
             }
         }
 
-        stage('Deploy') {
-            steps {
-                sh '''
-                ssh -o StrictHostKeyChecking=no devops@192.168.68.58 "
-                    cd /opt/devops-project/app &&
-                    docker compose -f docker-compose_ZhantemirB.yml up -d
-                "
-                '''
+        stage('Deploy to Production') {
+            when {
+                branch "main"
             }
+            steps {
+                echo "Deployment happens only on main (Kubernetes in Part 3)"
+            }
+        }
+    }
+
+    post {
+        success {
+            archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
+            echo "Build successful!"
+        }
+        failure {
+            echo "Pipeline failed!"
         }
     }
 }
