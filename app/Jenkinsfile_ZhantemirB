@@ -19,27 +19,34 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh './gradlew clean build'
+                dir('app') {
+                    sh 'chmod +x mvnw'
+                    sh './mvnw clean package -DskipTests'
+                }
             }
         }
 
         stage('Test') {
             steps {
-                sh './gradlew test'
+                dir('app') {
+                    sh './mvnw test'
+                }
             }
         }
 
         stage('Static Analysis') {
             steps {
-                echo "Static code analysis (Checkstyle / SpotBugs placeholder)"
+                echo "Static analysis (placeholder: Checkstyle / SpotBugs)"
             }
         }
 
         stage('Docker Build') {
             steps {
-                sh """
-                    docker build -t ${IMAGE}:${VERSION} .
-                """
+                dir('app') {
+                    sh """
+                        docker build -t ${IMAGE}:${VERSION} .
+                    """
+                }
             }
         }
 
@@ -63,14 +70,14 @@ pipeline {
                 branch "main"
             }
             steps {
-                echo "Deployment happens only on main (Kubernetes in Part 3)"
+                echo "Kubernetes deployment happens in Part 3"
             }
         }
     }
 
     post {
         success {
-            archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
+            archiveArtifacts artifacts: 'app/target/*.jar', fingerprint: true
             echo "Build successful!"
         }
         failure {
