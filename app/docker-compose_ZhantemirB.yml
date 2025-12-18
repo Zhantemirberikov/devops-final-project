@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  devopsapp:
+    image: devopsapp:zhantemir
+    container_name: devopsapp_zhantemir
+    ports:
+      - "8080:8080"
+    restart: always
