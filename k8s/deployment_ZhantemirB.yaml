@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: todo-container
-          image: zhantemirb/todo-app:14
+          image: zhantemirb/devops-app:latest
           ports:
             - containerPort: 8080
           envFrom:
@@ -29,4 +29,3 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
-

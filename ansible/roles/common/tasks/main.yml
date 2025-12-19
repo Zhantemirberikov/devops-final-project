@@ -1,0 +1,18 @@
+---
+# Установка базовых пакетов
+- name: Install base packages
+  apt:
+    name:
+      - curl
+      - git
+      - apt-transport-https
+      - ca-certificates
+    state: present
+    update_cache: yes
+
+# Создание системного пользователя (пример для ТЗ)
+- name: Create devops user
+  user:
+    name: devopsuser
+    shell: /bin/bash
+    state: present

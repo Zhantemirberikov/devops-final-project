@@ -1,0 +1,15 @@
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins_zhantemir
+    user: root
+    ports:
+      - "8081:8080"
+    volumes:
+      - jenkins_home_zhantemir:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+volumes:
+  jenkins_home_zhantemir:
+

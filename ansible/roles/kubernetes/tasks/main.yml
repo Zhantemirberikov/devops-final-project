@@ -1,0 +1,58 @@
+---
+# Проверяем установлен ли Docker
+- name: Check if Docker exists
+  command: docker --version
+  register: docker_installed
+  ignore_errors: yes
+
+
+# Устанавливаем Docker только если его нет
+- name: Install Docker
+  apt:
+    name: docker.io
+    state: present
+    update_cache: yes
+  when: docker_installed.rc != 0
+
+
+- name: Enable Docker
+  systemd:
+    name: docker
+    enabled: yes
+    state: started
+
+
+# kubectl
+# Install kubectl from Google repo if not installed
+- name: Check kubectl
+  command: kubectl version --client --output=yaml
+  register: kubectl_check
+  ignore_errors: yes
+
+- name: Add Kubernetes APT key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+  when: kubectl_check.rc != 0
+
+- name: Add Kubernetes repo
+  apt_repository:
+    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+  when: kubectl_check.rc != 0
+
+- name: Install kubectl
+  apt:
+    name: kubectl
+    state: present
+    update_cache: yes
+  when: kubectl_check.rc != 0
+
+
+
+# Minikube
+- name: Download Minikube
+  get_url:
+    url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    dest: /usr/local/bin/minikube
+    mode: '0755'
