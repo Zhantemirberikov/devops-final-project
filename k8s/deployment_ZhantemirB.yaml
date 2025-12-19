@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-deploy-zhantemirb
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      containers:
+        - name: todo-container
+          image: zhantemirb/todo-app:14
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: todo-config-zhantemirb
+            - secretRef:
+                name: todo-secret-zhantemirb
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+

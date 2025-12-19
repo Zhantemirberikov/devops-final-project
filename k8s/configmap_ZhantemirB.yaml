@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todo-config-zhantemirb
+data:
+  APP_NAME: "TodoApp"
+  APP_ENV: "production"
